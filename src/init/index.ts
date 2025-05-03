@@ -1,7 +1,7 @@
 import { registerInitStep, initialize } from './initialization';
-import { registerDatabaseStep } from './database';
+import { initAppDb } from './database'; // Import the step object
 
-// Initialize the database step
-registerDatabaseStep();
+// Register the imported initialization steps
+registerInitStep(initAppDb);
 
 export { registerInitStep, initialize }; 

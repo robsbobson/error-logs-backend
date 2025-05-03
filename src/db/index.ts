@@ -2,8 +2,13 @@ import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
 
-// Database file path
-const DB_FILE_PATH = path.resolve(process.cwd(), 'app.sqlite');
+// Determine Database file path: Use environment variable or default
+const DEFAULT_DB_FILE = 'app.sqlite';
+const DB_FILE_PATH = process.env.DATABASE_PATH 
+  ? path.resolve(process.cwd(), process.env.DATABASE_PATH)
+  : path.resolve(process.cwd(), DEFAULT_DB_FILE);
+
+console.log(`[DB] Using database file at: ${DB_FILE_PATH}`);
 
 /**
  * Get database connection
@@ -13,6 +18,7 @@ export function getDbConnection(): Database.Database {
   // Ensure the database directory exists
   const dbDir = path.dirname(DB_FILE_PATH);
   if (!fs.existsSync(dbDir)) {
+    console.log(`[DB] Creating database directory: ${dbDir}`);
     fs.mkdirSync(dbDir, { recursive: true });
   }
   

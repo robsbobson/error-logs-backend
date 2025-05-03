@@ -28,6 +28,49 @@ export function registerInitStep(step: InitStep): void {
 }
 
 /**
+ * Logs the result of the initialization process to the database.
+ */
+async function logInitializationResult(
+  success: boolean,
+  errorMessage: string,
+  duration: number,
+  logEntries: string[]
+): Promise<void> {
+  try {
+    // Initialize the database connection
+    const db = getDbConnection();
+    
+    const logEntry: StartupLogEntry = {
+      start_datetime: new Date().toISOString(),
+      start_duration: duration,
+      status: success ? 'success' : 'error',
+      status_message: success ? 'Initialization completed successfully' : errorMessage,
+      process_log: logEntries.join('\\n')
+    };
+    
+    db.prepare(`
+      INSERT INTO startup_log 
+      (start_datetime, start_duration, status, status_message, process_log) 
+      VALUES (?, ?, ?, ?, ?)\
+    `).run(
+      logEntry.start_datetime,
+      logEntry.start_duration,
+      logEntry.status,
+      logEntry.status_message,
+      logEntry.process_log
+    );
+    
+    db.close();
+    logMessage('Startup log saved successfully.');
+  } catch (error) {
+    // Log error saving startup log, but don't let it fail the overall initialization status if it was successful otherwise
+    const logSaveErrorMsg = `Failed to save startup log: ${error instanceof Error ? error.message : String(error)}`;
+    logMessage(logSaveErrorMsg); // Add to in-memory log
+    console.error(logSaveErrorMsg); // Log to console as well
+  }
+}
+
+/**
  * Run all initialization steps
  */
 export async function initialize(): Promise<boolean> {
@@ -51,12 +94,12 @@ export async function initialize(): Promise<boolean> {
         success = false;
         errorMessage = `Step ${step.name} failed`;
         logMessage(errorMessage);
-        break;
+        break; // Stop initialization on first failure
       }
     }
     
     if (success) {
-      logMessage('Application initialization completed successfully');
+      logMessage('Application initialization completed successfully.');
     }
   } catch (error) {
     success = false;
@@ -66,35 +109,9 @@ export async function initialize(): Promise<boolean> {
   
   const duration = Date.now() - startTime;
   
-  // Log the initialization result to the database
-  try {
-    // Initialize the database connection (add step to the database)
-    const db = getDbConnection();
-    
-    const logEntry: StartupLogEntry = {
-      start_datetime: new Date().toISOString(),
-      start_duration: duration,
-      status: success ? 'success' : 'error',
-      status_message: success ? 'Initialization completed successfully' : errorMessage,
-      process_log: processLog.join('\n')
-    };
-    
-    db.prepare(`
-      INSERT INTO startup_log 
-      (start_datetime, start_duration, status, status_message, process_log) 
-      VALUES (?, ?, ?, ?, ?)
-    `).run(
-      logEntry.start_datetime,
-      logEntry.start_duration,
-      logEntry.status,
-      logEntry.status_message,
-      logEntry.process_log
-    );
-    
-    db.close();
-  } catch (error) {
-    console.error('Failed to save startup log:', error);
-  }
+  // Log the initialization result separately
+  await logInitializationResult(success, errorMessage, duration, processLog);
   
+  // Return the overall success status of the initialization steps
   return success;
 } 
