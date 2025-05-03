@@ -1,0 +1,8 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+Rule Name: 3x3_implementation_approach
+Description: 
+Implement a maximum of 3 steps of the implementation plan, briefly summarize what you did, and outline the plan for the next 3 actions—stop work at this point and wait for my feedback.

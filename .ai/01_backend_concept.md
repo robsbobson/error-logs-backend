@@ -1,5 +1,8 @@
-### Backend Structure
+# Backend Structure
+
 Below is the structure of the modules that make up the backend.
+
+```xml
 <backend>
     <init>Initialization and application startup</init>
     <db>Dedicated database for the backend</db>
@@ -12,3 +15,4 @@ Below is the structure of the modules that make up the backend.
     </sync>
     <fetch>Fetching data by the frontend from the backend</fetch>
 </backend>
+```
