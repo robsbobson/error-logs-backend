@@ -1,5 +1,5 @@
 import { getDbConnection } from '../db';
-import { InitStep, StartupLogEntry } from '../types';
+import { InitStep, StartupLogEntry } from './types';
 
 /**
  * Registry of initialization steps

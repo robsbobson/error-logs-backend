@@ -4,28 +4,23 @@ globs:
 alwaysApply: true
 ---
 ## Tech Stack
+
 - TypeScript 5
 
 ## Project Structure
 
-When introducing changes to the project, always follow the directory structure below:
-
-- `./src` - source code
-- `./src/db` - database services and controllers
-- `./src/types.ts` - Shared types for modules
-- `./src/lib` - Services and helpers 
-- `./src/assets` - static internal assets
-
-When modifying the directory structure, always update this section.
+When introducing changes to the project, always follow the current directory structure.
 
 ### Guidelines for clean code
+
 - Use SRP (Single Responsibility Principle) and KISS (Keep It Simple, Stupid) principles.
+- Prefer module-specific types where possible.
 - Use feedback from linters to improve the code when making changes.
 - Prioritize error handling and edge cases.
 - Handle errors and edge cases at the beginning of functions.
 - Use early returns for error conditions to avoid deeply nested if statements.
 - Place the happy path last in the function for improved readability.
-- Avoid unnecessary else statements; use if-return pattern instead.
+- Avoid unnecessary else statements, use if-return pattern instead.
 - Use guard clauses to handle preconditions and invalid states early.
 - Implement proper error logging and user-friendly error messages.
 - Consider using custom error types or error factories for consistent error handling.

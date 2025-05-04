@@ -1,12 +1,10 @@
 import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
+import config from '../core/config'; // Use config module
 
-// Determine Database file path: Use environment variable or default
-const DEFAULT_DB_FILE = 'app.sqlite';
-const DB_FILE_PATH = process.env.DATABASE_PATH 
-  ? path.resolve(process.cwd(), process.env.DATABASE_PATH)
-  : path.resolve(process.cwd(), DEFAULT_DB_FILE);
+// Determine Database file path using config
+const DB_FILE_PATH = path.resolve(process.cwd(), config.DATABASE_PATH);
 
 console.log(`[DB] Using database file at: ${DB_FILE_PATH}`);
 
@@ -42,18 +40,4 @@ export function tableExists(db: Database.Database, tableName: string): boolean {
   return !!result;
 }
 
-/**
- * Create the startup_log table if it doesn't exist
- */
-export function createStartupLogTable(db: Database.Database): void {
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS startup_log (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      start_datetime TEXT NOT NULL,
-      start_duration INTEGER NOT NULL,
-      status TEXT NOT NULL,
-      status_message TEXT NOT NULL,
-      process_log TEXT NOT NULL
-    )
-  `);
-} 
+// Removed createStartupLogTable function 
